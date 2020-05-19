@@ -1,18 +1,8 @@
 #ifndef DL_INFERENCE_DLInference_H
 #define DL_INFERENCE_DLInference_H
 
-#include "./Model.h"
-#include "./Tensor.h"
-#include <algorithm>
-#include <iterator>
-#include <numeric>
-#include <iomanip>
+#include <string>
 #include <vector>
-#include <sstream> 
-#include <fstream>
-#include <stdio.h>
-#include <functional>
-
 
 class DLInference {
 
@@ -20,6 +10,8 @@ public:
 
     void init();
     std::vector<float> generation();
+    void SetModelGraph(const std::string& aModelGraph);
+    void SetModelRestore(const std::string& aModelRestore);
 
 private:
 

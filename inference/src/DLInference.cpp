@@ -1,13 +1,6 @@
-#include <algorithm>
-#include <iterator>
-#include <numeric>
-#include <iomanip>
-#include <vector>
-#include <sstream> 
-#include <fstream>
-#include <stdio.h>
-#include <functional>
-#include "./DLInference.h"
+#include "DLInference.h"
+#include "Model.h"
+#include "Tensor.h"
 
 void DLInference::init() {
 
@@ -35,7 +28,7 @@ void DLInference::init() {
 
     // outFileName = "./event" + modelType + std::to_string(energyValue) + ".txt";
 
-};
+}
 
 
 std::vector<float> DLInference::generation() {
@@ -68,10 +61,13 @@ std::vector<float> DLInference::generation() {
     std::vector<float> result = generatedEvent->get_data<float>();
 
     return result;
-};
+}
 
-
-
-
-
-
+void DLInference::SetModelGraph(const std::string &aModelGraph)
+{
+    modelGraph = aModelGraph;
+}
+void DLInference::SetModelRestore(const std::string &aModelRestore)
+{
+    modelRestore = aModelRestore;
+}
