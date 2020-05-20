@@ -8,10 +8,16 @@ class DLInference {
 
 public:
 
-    void init();
     std::vector<float> generation();
-    void SetModelGraph(const std::string& aModelGraph);
-    void SetModelRestore(const std::string& aModelRestore);
+    void SetModelGraph(const std::string &aModelGraph);
+    void SetModelRestore(const std::string &aModelRestore);
+    void SetInputNode(const std::string &anInputNode);
+    void SetLabelNode(const std::string &aLabelNode);
+    void SetOutputNode(const std::string &anOutputNode);
+    void SetInputShape(const  std::vector<int64_t> &anInputShape);
+    void SetLabelShape(const std::vector<int64_t> &aLabelShape);
+    void SetEnergyValue(const int &anEnergyValue);
+    void SetInputVecNumber(const int &anInputVecNumber);
 
 private:
 

@@ -2,34 +2,6 @@
 #include "Model.h"
 #include "Tensor.h"
 
-void DLInference::init() {
-
-    //TODO Read from parameters file 
-    modelType =  "dcgan";
-   // std::string energyInput = argv[1];
-
-    //std::stringstream energy(energyInput);
-    energyValue = 0; 
-    inputVecNumber = 5;
-   // energy >> energyValue; 
-
-    modelGraph = "../cvae.pb" ;
-    modelRestore = "../checkpoint/progress-20-model.ckpt";
-
-    inputNode  = "z_input";
-    labelNode  = "y_input";
-    outputNode = "decoder/x_decoder_mean_output";
-    
-    inputShape = {100,2};
-    labelShape = {100,10};
-
-    inputSize = std::accumulate(begin(inputShape), end(inputShape), 1, std::multiplies<>());
-    labelSize = std::accumulate(begin(labelShape), end(labelShape), 1, std::multiplies<>());
-
-    // outFileName = "./event" + modelType + std::to_string(energyValue) + ".txt";
-
-}
-
 
 std::vector<float> DLInference::generation() {
     
@@ -67,11 +39,40 @@ std::vector<float> DLInference::generation() {
     return result;
 }
 
-void DLInference::SetModelGraph(const std::string &aModelGraph)
-{
+void DLInference::SetModelGraph(const std::string &aModelGraph){
     modelGraph = aModelGraph;
 }
-void DLInference::SetModelRestore(const std::string &aModelRestore)
-{
+
+void DLInference::SetModelRestore(const std::string &aModelRestore){
     modelRestore = aModelRestore;
+}
+
+void DLInference::SetInputNode(const std::string &anInputNode){
+    inputNode = anInputNode;
+}
+
+void DLInference::SetLabelNode(const std::string &aLabelNode){
+    labelNode = aLabelNode;
+}
+
+void DLInference::SetOutputNode(const std::string &anOutputNode){
+    outputNode = anOutputNode;
+}
+
+// {100,2}
+void DLInference::SetInputShape(const std::vector<int64_t> &anInputShape){
+    inputShape = anInputShape;
+}
+
+// labelShape = {100,10};
+void DLInference::SetLabelShape(const std::vector<int64_t> &aLabelShape){
+    labelShape = aLabelShape;
+}
+
+void DLInference::SetEnergyValue(const int &anEnergyValue){
+    energyValue = anEnergyValue;
+}
+
+void DLInference::SetInputVecNumber(const int &anInputVecNumber){
+    inputVecNumber = anInputVecNumber;
 }

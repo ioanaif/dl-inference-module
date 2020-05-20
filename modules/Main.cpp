@@ -12,7 +12,16 @@
 int main(int argc,char **argv) {
     
     DLInference session; 
-    session.init();
+    session.SetModelGraph("../cvae.pb");
+    session.SetModelRestore("../checkpoint/progress-20-model.ckpt");
+    session.SetInputNode("z_input");
+    session.SetLabelNode("y_input");
+    session.SetOutputNode("decoder/x_decoder_mean_output");
+    session.SetInputShape({100,2});
+    session.SetLabelShape({100,10});
+    session.SetEnergyValue(1);
+    session.SetInputVecNumber(5);
+
     auto result = session.generation();
 
     for (auto it = result.begin() ; it != result.end(); ++it) 
