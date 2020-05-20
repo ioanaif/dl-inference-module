@@ -22,7 +22,7 @@ int main(int argc,char **argv) {
     session.SetEnergyValue(1);
     session.SetInputVecNumber(5);
 
-    auto result = session.generation();
+    auto result = session.Generation();
 
     for (auto it = result.begin() ; it != result.end(); ++it) 
         std::cout  << *it <<" , "<< std::endl;

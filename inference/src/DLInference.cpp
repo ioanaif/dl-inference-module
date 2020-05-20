@@ -2,36 +2,36 @@
 #include "Model.h"
 #include "Tensor.h"
 
-
-std::vector<float> DLInference::generation() {
-    
-    // Create  Model
+auto DLInference::ModelBuildUp(){
     Model m(modelGraph);
     m.restore(modelRestore);
+    return m;
+}
 
-    // Create Necesary Tensors
+auto DLInference::TensorBuildUp(std::vector<int64_t> shape, int vecFillNr, auto model, std::string node){
+   
+    int size = std::accumulate(begin(shape), end(shape), 1, std::multiplies<>());
+    std::vector<float> toVec(size);
 
-    auto inputData = new Tensor(m, inputNode);
-    auto eventEnergy = new Tensor(m, labelNode);
-    auto generatedEvent = new Tensor(m, outputNode);
-    //auto xinput  = new Tensor(m,xiNode);
+    std::fill(toVec.begin(), toVec.end(), vecFillNr);
 
-    // Feed Data to Tensors
+    auto dataTensor = new Tensor(model, node);
+    dataTensor->set_data(toVec, shape);
 
-    std::vector<float> inputVec(inputSize);
-    std::vector<float> energies(labelSize);
-    std::fill(inputVec.begin(), inputVec.end(), inputVecNumber);
-    std::fill(energies.begin(), energies.end(), energyValue);
+    return dataTensor;
+}
 
+std::vector<float> DLInference::Generation() {
 
-    inputData->set_data(inputVec, inputShape);
-    eventEnergy->set_data(energies, labelShape);
+    Model model = ModelBuildUp();
 
-    auto xinput  = new Tensor(m,"x_input");
-    std::vector<float> xi(78400);
-    std::fill(xi.begin(), xi.end(), 5);
-    xinput->set_data(xi,{100,28,28,1});
-    m.run({xinput,inputData,eventEnergy}, generatedEvent);
+    auto inputData = TensorBuildUp(inputShape, inputVecNumber, model, inputNode);
+    auto eventEnergy = TensorBuildUp(labelShape, energyValue, model, labelNode);
+    auto generatedEvent = new Tensor(model, outputNode);
+
+    auto xinput = TensorBuildUp({100,28,28,1}, 5, model, "x_input");
+
+    model.run({xinput,inputData,eventEnergy}, generatedEvent);
 
     // Get Generated Event Tensor
     std::vector<float> result = generatedEvent->get_data<float>();
