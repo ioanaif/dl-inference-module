@@ -4,6 +4,9 @@
 
 
 std::vector<float> DLInference::generation() {
+
+    inputSize = std::accumulate(begin(inputShape), end(inputShape), 1, std::multiplies<>());
+    labelSize = std::accumulate(begin(labelShape), end(labelShape), 1, std::multiplies<>());
     
     // Create  Model
     Model m(modelGraph);
