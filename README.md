@@ -1,25 +1,21 @@
 # Deep Learning Inference for Fast Simulation Applications 
 
-C++ Inference module for Generative TensorFlow Models 
-
+C++ Inference Module for Generative TensorFlow Models 
 
 ## How To Run Inference
 
-Download the Tensorflow C API (https://www.tensorflow.org/install/lang_c) and extract its `./lib/` contents to `./modules/all/`
+1. Follow the [Inference Library](./inference/README.md) instalation steps. 
 
-
-Moreover, you can run inference for your choice of model and energy input:
+2. Run existing model choice: 
 
 ```sh
-cd module/ensemble/
+cd modules/
 mkdir build
 cd build
-cmake ..
-make .
-./dlinf modelChoice energyValue 
+cmake3 .. -DCMAKE_PREFIX_PATH=<PATH_TO_INFERENCE_LIBRARY_INSTALL_PATH>
+make 
+./EventGeneration
 ```
-
-where `modelChoice` can be either `dcgan` , `cvae`, `ar`
 
 ## How To Integrate Your Model 
 
@@ -39,7 +35,6 @@ generation = tf.add(a, b, name='output_result')
 2. Store the graph definition in a `.pb` file as well as the latest checkpoint  in `.ckpt` files (`.data`, `.index`, `.meta`)
 
 3. Note your input data shape information (both for samples and labels). 
-
 
 ## Model Integration Info File Example
 
