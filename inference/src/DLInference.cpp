@@ -2,12 +2,12 @@
 #include "Model.h"
 #include "Tensor.h"
 
-auto DLInference::ModelBuildUp(){
+auto DLInference::ModelBuildUp() {
     Model m(modelGraph);
     m.restore(modelRestore);
     return m;
 }
-auto DLInference::TensorBuildUp(std::vector<int64_t> shape, int vecFillNr, auto &model, std::string node){
+auto DLInference::TensorBuildUp(std::vector<int64_t> shape, int vecFillNr, auto &model, std::string node) {
    
     int size = std::accumulate(begin(shape), end(shape), 1, std::multiplies<>());
     std::vector<float> toVec(size);
@@ -28,13 +28,15 @@ std::vector<float> DLInference::Generation() {
     auto eventEnergy = TensorBuildUp(labelShape, energyValue, model, labelNode);
     auto generatedEvent = new Tensor(model, outputNode);
 
-    auto xinput = TensorBuildUp({100,28,28,1}, 5, model, "x_input");
-
-    model.run({&xinput,&inputData,&eventEnergy}, generatedEvent);
+    if (extraInputNode != "") {
+        auto xInput = TensorBuildUp(extraInputShape, extraInputVecNumber, model, extraInputNode);
+        model.run({&xInput,&inputData,&eventEnergy}, generatedEvent);
+    } else {
+        model.run({&inputData,&eventEnergy}, generatedEvent);
+    }
 
     // Get Generated Event Tensor
     std::vector<float> result = generatedEvent->get_data<float>();
-
     return result;
 }
 
@@ -50,6 +52,10 @@ void DLInference::SetInputNode(const std::string &anInputNode){
     inputNode = anInputNode;
 }
 
+void DLInference::SetExtraInputNode(const std::string &anExtraInputNode){
+    extraInputNode = anExtraInputNode;
+}
+
 void DLInference::SetLabelNode(const std::string &aLabelNode){
     labelNode = aLabelNode;
 }
@@ -63,6 +69,10 @@ void DLInference::SetInputShape(const std::vector<int64_t> &anInputShape){
     inputShape = anInputShape;
 }
 
+void DLInference::SetExtraInputShape(const std::vector<int64_t> &anExtraInputShape){
+    extraInputShape = anExtraInputShape;
+}
+
 // labelShape = {100,10};
 void DLInference::SetLabelShape(const std::vector<int64_t> &aLabelShape){
     labelShape = aLabelShape;
@@ -74,4 +84,8 @@ void DLInference::SetEnergyValue(const int &anEnergyValue){
 
 void DLInference::SetInputVecNumber(const int &anInputVecNumber){
     inputVecNumber = anInputVecNumber;
+}
+
+void DLInference::SetExtraInputVecNumber(const int &anExtraInputVecNumber){
+    extraInputVecNumber = anExtraInputVecNumber;
 }
