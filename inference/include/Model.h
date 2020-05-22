@@ -29,6 +29,14 @@ class Tensor;
 class Model {
 public:
     explicit Model(const std::string&);
+
+    // Rule of five, moving is easy as the pointers can be copied, copying not as i have no idea how to copy
+    // the contents of the pointer (i guess dereferencing won't do a deep copy)
+    Model(const Model &model) = delete;
+    Model(Model &&model) = default;
+    Model& operator=(const Model &model) = delete;
+    Model& operator=(Model &&model) = default;
+
     ~Model();
 
     void init();
@@ -55,7 +63,7 @@ private:
     TF_Status* status;
 
     // Read a file from a string
-    TF_Buffer* read(const std::string&);
+    static TF_Buffer* read(const std::string&);
 
     bool status_check(bool throw_exc) const;
     void error_check(bool condition, const std::string &error) const;
@@ -66,3 +74,4 @@ public:
 
 
 #endif //CPPFLOW_MODEL_H
+

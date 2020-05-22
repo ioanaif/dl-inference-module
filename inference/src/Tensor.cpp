@@ -12,14 +12,14 @@
 
 ==============================================================================*/
 
-
+#include <memory>
 #include <utility>
 #include "../include/Tensor.h"
 
 
 Tensor::Tensor(const Model& model, const std::string& operation) {
 
-    // Get operation by the name
+     // Get operation by the name
     this->op.oper = TF_GraphOperationByName(model.graph, operation.c_str());
     this->op.index = 0;
 
@@ -47,6 +47,8 @@ Tensor::Tensor(const Model& model, const std::string& operation) {
 
         // Only one dimension can be unknown using this constructor
         // error_check(std::count(this->shape.begin(), this->shape.end(), -1) <= 1, "At most one dimension can be unknown");
+
+        delete[] dims;
     }
 
     this->flag = 0;
@@ -102,11 +104,11 @@ void Tensor::set_data(std::vector<T> new_data) {
     this->error_check(new_data.size() % exp_size == 0, "Expected and provided number of elements do not match");
 
     // Deallocator
-    auto d = [](void* ddata, size_t, void* arg) {delete[] static_cast<T*>(ddata);};
+    auto d = [](void* ddata, size_t, void*) {free(static_cast<T*>(ddata));};
 
 
     // Calculate actual shape of unknown dimensions
-    this->actual_shape = new std::vector<int64_t>(shape.begin(), shape.end());
+    this->actual_shape = std::make_unique<decltype(actual_shape)::element_type>(shape.begin(), shape.end());
     std::replace_if (actual_shape->begin(), actual_shape->end(), [](int64_t r) {return r==-1;}, new_data.size()/exp_size);
 
     // Saves data on class
@@ -156,7 +158,9 @@ std::vector<T> Tensor::get_data() {
     return std::vector<T>(T_data, T_data + size);
 }
 
-
+std::vector<int64_t> Tensor::get_shape() {
+	return shape;
+}
 
 template<typename T>
 TF_DataType Tensor::deduce_type() {
@@ -182,9 +186,11 @@ TF_DataType Tensor::deduce_type() {
         return TF_UINT32;
     if (std::is_same<T, uint64_t>::value)
         return TF_UINT64;
+
+    throw std::runtime_error{"Could not deduce type!"};
 }
 
-void Tensor::deduce_shape(const Model& model) {
+void Tensor::deduce_shape() {
     // Get number of dimensions
     int n_dims = TF_NumDims(this->val);
 
@@ -250,3 +256,4 @@ template void Tensor::set_data<uint8_t>(std::vector<uint8_t> new_data, const std
 template void Tensor::set_data<uint16_t>(std::vector<uint16_t> new_data, const std::vector<int64_t>& new_shape);
 template void Tensor::set_data<uint32_t>(std::vector<uint32_t> new_data, const std::vector<int64_t>& new_shape);
 template void Tensor::set_data<uint64_t>(std::vector<uint64_t> new_data, const std::vector<int64_t>& new_shape);
+

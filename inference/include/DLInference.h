@@ -9,7 +9,7 @@ class DLInference {
 public:
 
     auto ModelBuildUp();
-    auto TensorBuildUp(std::vector<int64_t> shape, int vecFillNr, auto model, std::string node);
+    auto TensorBuildUp(std::vector<int64_t> shape, int vecFillNr, auto &model, std::string node);
     std::vector<float> Generation();
     void SetModelGraph(const std::string &aModelGraph);
     void SetModelRestore(const std::string &aModelRestore);
