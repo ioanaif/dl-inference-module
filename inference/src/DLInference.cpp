@@ -7,16 +7,15 @@ auto DLInference::ModelBuildUp(){
     m.restore(modelRestore);
     return m;
 }
-
-auto DLInference::TensorBuildUp(std::vector<int64_t> shape, int vecFillNr, auto model, std::string node){
+auto DLInference::TensorBuildUp(std::vector<int64_t> shape, int vecFillNr, auto &model, std::string node){
    
     int size = std::accumulate(begin(shape), end(shape), 1, std::multiplies<>());
     std::vector<float> toVec(size);
 
     std::fill(toVec.begin(), toVec.end(), vecFillNr);
 
-    auto dataTensor = new Tensor(model, node);
-    dataTensor->set_data(toVec, shape);
+    Tensor dataTensor{model, node};
+    dataTensor.set_data(toVec, shape);
 
     return dataTensor;
 }
@@ -31,7 +30,7 @@ std::vector<float> DLInference::Generation() {
 
     auto xinput = TensorBuildUp({100,28,28,1}, 5, model, "x_input");
 
-    model.run({xinput,inputData,eventEnergy}, generatedEvent);
+    model.run({&xinput,&inputData,&eventEnergy}, generatedEvent);
 
     // Get Generated Event Tensor
     std::vector<float> result = generatedEvent->get_data<float>();
