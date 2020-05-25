@@ -36,3 +36,4 @@
 all/*
 **/build/*
 **/install/*
+.vs*
