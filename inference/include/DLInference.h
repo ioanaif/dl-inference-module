@@ -23,6 +23,18 @@ public:
     void SetEnergyValue(const int &anEnergyValue);
     void SetInputVecNumber(const int &anInputVecNumber);
     void SetExtraInputVecNumber(const int &anExtraInputVecNumber);
+    std::string GetModelGraph();
+    std::string GetModelRestore();
+    std::string GetInputNode();
+    std::string GetExtraInputNode();
+    std::string GetLabelNode();
+    std::string GetOutputNode();
+    std::vector<int64_t> GetInputShape();
+    std::vector<int64_t> GetExtraInputShape();
+    std::vector<int64_t> GetLabelShape();
+    int GetEnergyValue();
+    int GetInputVecNumber();
+    int SetExtraInputVecNumber();
 
 private:
 

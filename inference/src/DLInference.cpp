@@ -40,52 +40,105 @@ std::vector<float> DLInference::Generation() {
     return result;
 }
 
-void DLInference::SetModelGraph(const std::string &aModelGraph){
+void DLInference::SetModelGraph(const std::string &aModelGraph) {
     modelGraph = aModelGraph;
 }
 
-void DLInference::SetModelRestore(const std::string &aModelRestore){
+void DLInference::SetModelRestore(const std::string &aModelRestore) {
     modelRestore = aModelRestore;
 }
 
-void DLInference::SetInputNode(const std::string &anInputNode){
+void DLInference::SetInputNode(const std::string &anInputNode) {
     inputNode = anInputNode;
 }
 
-void DLInference::SetExtraInputNode(const std::string &anExtraInputNode){
+void DLInference::SetExtraInputNode(const std::string &anExtraInputNode) {
     extraInputNode = anExtraInputNode;
 }
 
-void DLInference::SetLabelNode(const std::string &aLabelNode){
+void DLInference::SetLabelNode(const std::string &aLabelNode) {
     labelNode = aLabelNode;
 }
 
-void DLInference::SetOutputNode(const std::string &anOutputNode){
+void DLInference::SetOutputNode(const std::string &anOutputNode) {
     outputNode = anOutputNode;
 }
 
 // {100,2}
-void DLInference::SetInputShape(const std::vector<int64_t> &anInputShape){
+void DLInference::SetInputShape(const std::vector<int64_t> &anInputShape) {
     inputShape = anInputShape;
 }
 
-void DLInference::SetExtraInputShape(const std::vector<int64_t> &anExtraInputShape){
+void DLInference::SetExtraInputShape(const std::vector<int64_t> &anExtraInputShape) {
     extraInputShape = anExtraInputShape;
 }
 
 // labelShape = {100,10};
-void DLInference::SetLabelShape(const std::vector<int64_t> &aLabelShape){
+void DLInference::SetLabelShape(const std::vector<int64_t> &aLabelShape) {
     labelShape = aLabelShape;
 }
 
-void DLInference::SetEnergyValue(const int &anEnergyValue){
+void DLInference::SetEnergyValue(const int &anEnergyValue) {
     energyValue = anEnergyValue;
 }
 
-void DLInference::SetInputVecNumber(const int &anInputVecNumber){
+void DLInference::SetInputVecNumber(const int &anInputVecNumber) {
     inputVecNumber = anInputVecNumber;
 }
 
-void DLInference::SetExtraInputVecNumber(const int &anExtraInputVecNumber){
+void DLInference::SetExtraInputVecNumber(const int &anExtraInputVecNumber) {
     extraInputVecNumber = anExtraInputVecNumber;
 }
+
+//////////////
+
+std::string DLInference::GetModelGraph() {
+    return modelGraph;
+} 
+
+std::string DLInference::GetModelRestore() {
+    return modelRestore;
+} 
+
+std::string DLInference::GetInputNode() {
+    return inputNode;
+}
+
+std::string DLInference::GetExtraInputNode() {
+    return extraInputNode;
+} 
+
+std::string DLInference::GetLabelNode() {
+    return labelNode;
+}
+
+std::string DLInference::GetOutputNode() {
+    return outputNode;
+}
+
+std::vector<int64_t> DLInference::GetInputShape() {
+    return inputShape;
+}
+
+std::vector<int64_t> DLInference::GetExtraInputShape() {
+    return extraInputShape;
+}
+
+std::vector<int64_t> DLInference::GetLabelShape() {
+    return labelShape;
+}
+
+int DLInference::GetEnergyValue() {
+    return energyValue;
+}
+
+int DLInference::GetInputVecNumber() {
+    return inputVecNumber;
+}
+
+int DLInference::SetExtraInputVecNumber() {
+    return extraInputVecNumber;
+}
+
+
+
