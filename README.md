@@ -6,7 +6,7 @@ C++ Inference Module for Generative TensorFlow Models
 
 1. Follow the [Inference Library](./inference/README.md) instalation steps. 
 
-2. Run existing model choice: 
+2. Run from an existing model (AR, GAN, VAE): 
 
 ```sh
 cd modules/
