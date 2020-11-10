@@ -134,7 +134,6 @@ template<typename T> void Tensor::set_data(std::vector<T> new_data, const std::v
 template<typename T>
 std::vector<T> Tensor::get_data() {
 
-    std::cout<<"la inceput de get_data"<<std::endl;
 
     // Check Tensor is valid
     this->error_check(this->flag != -1, "Tensor is not valid");
@@ -153,7 +152,6 @@ std::vector<T> Tensor::get_data() {
     size_t size = TF_TensorByteSize(this->val) / TF_DataTypeSize(TF_TensorType(this->val));
 
     // Convert to correct type
-    std::cout<<"convert to correct type"<<std::endl;
     const auto T_data = static_cast<T*>(raw_data);
     return std::vector<T>(T_data, T_data + size);
 }

@@ -91,15 +91,15 @@ int main(int argc,char **argv) {
     auto result = session.Generation();
 
     vector<float> energies;
-    for (int i = 0; i < 13824; i++) {
+    auto eventShape = ShapeTransform(modelVars[5]);
+    int oneEventSize = std::accumulate(begin(eventShape)+1, end(eventShape), 1, std::multiplies<>());
+    for (int i = 0; i < oneEventSize; i++) {
 	energies.push_back(helps.DepositionsTransform(result[i]));
-        cout<<energies[i]<<'\n'; 
+//        cout<<energies[i]<<'\n'; 
    }
     ;
-    cout<<"SIZE OF RESULT: "<<energies.size()<<std::endl;
 
     auto pos = helps.CellPositionsGeneration();
-    cout<<"SIZE OF POS: "<<pos.size()<<std::endl;
     // Stream Event to File
 
     std::ofstream outFile("../eventAR2.txt");

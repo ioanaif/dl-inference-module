@@ -217,7 +217,6 @@ void Model::run(const std::vector<Tensor*>& inputs, const std::vector<Tensor*>& 
     TF_SessionRun(this->session, nullptr, io.data(), iv.data(), inputs.size(), oo.data(), ov, outputs.size(), nullptr, 0, nullptr, this->status);
     this->status_check(true);
 
-    std::cout<<"after status check"<<std::endl;
 
     // Save results on outputs and mark as full
     for (std::size_t i=0; i<outputs.size(); i++) {
