@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -DNDEBUG   CMakeFiles/EventGeneration.dir/main.cpp.o  -o ../bin/EventGeneration  -lInferenceLib 

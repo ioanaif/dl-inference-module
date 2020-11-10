@@ -1,77 +1,221 @@
-#include "DLInference.h"
+ #include "DLInference.h"
 #include "Model.h"
 #include "Tensor.h"
+#include <typeinfo>
 
-void DLInference::init() {
 
-    //TODO Read from parameters file 
-    modelType =  "dcgan";
-   // std::string energyInput = argv[1];
+auto DLInference::ModelBuildUp() {
+    Model m(modelGraph);
+    m.restore(modelRestore);
+    return m;
+}
 
-    //std::stringstream energy(energyInput);
-    energyValue = 0; 
-    inputVecNumber = 5;
-   // energy >> energyValue; 
+float RandomFloat() {
+    float r = (float)std::rand() / (float)RAND_MAX;
+    return -1 + r * 2;
+}
 
-    modelGraph = "../cvae.pb" ;
-    modelRestore = "../checkpoint/progress-20-model.ckpt";
-
-    inputNode  = "z_input";
-    labelNode  = "y_input";
-    outputNode = "decoder/x_decoder_mean_output";
-    
-    inputShape = {100,2};
-    labelShape = {100,10};
-
-    inputSize = std::accumulate(begin(inputShape), end(inputShape), 1, std::multiplies<>());
-    labelSize = std::accumulate(begin(labelShape), end(labelShape), 1, std::multiplies<>());
-
-    // outFileName = "./event" + modelType + std::to_string(energyValue) + ".txt";
-
+auto DLInference::GenerateInputTensor(std::vector<int64_t> shape, auto &model, std::string node) {
+    int size = std::accumulate(begin(shape), end(shape), 1, std::multiplies<>());
+    std::vector<float> toVec(size);
+    std::generate(toVec.begin(), toVec.end(), RandomFloat);
+    Tensor dataTensor{model, node};
+    dataTensor.set_data(toVec, shape);
+    return dataTensor;
 }
 
 
-std::vector<float> DLInference::generation() {
-    
-    // Create  Model
-    Model m(modelGraph);
-    m.restore(modelRestore);
-
-    // Create Necesary Tensors
-
-    auto inputData = new Tensor(m, inputNode);
-    auto eventEnergy = new Tensor(m, labelNode);
-    auto generatedEvent = new Tensor(m, outputNode);
-    //auto xinput  = new Tensor(m,xiNode);
-
-    // Feed Data to Tensors
-
-    std::vector<float> inputVec(inputSize);
-    std::vector<float> energies(labelSize);
-    std::fill(inputVec.begin(), inputVec.end(), inputVecNumber);
-    std::fill(energies.begin(), energies.end(), energyValue);
+auto DLInference::GenerateLabelsTensor(std::vector<int64_t> shape, std::vector<float> vecFill, auto &model, std::string node) {
+    int size = std::accumulate(begin(shape), end(shape), 1, std::multiplies<>());
+    std::vector<float> toVec(size);
+    int times = toVec.size() / vecFill.size();
+    for (int i = 0; i < times; i++) {
+    	toVec.insert(toVec.begin(), vecFill.begin(), vecFill.end());
+    }
+    Tensor dataTensor{model, node};
+    dataTensor.set_data(toVec, shape);
+    return dataTensor;
+}
 
 
-    inputData->set_data(inputVec, inputShape);
-    eventEnergy->set_data(energies, labelShape);
+auto DLInference::TensorBuildUpFloat(std::vector<int64_t> shape, auto vecFillNr, auto &model, std::string node) {
+   
+    int size = std::accumulate(begin(shape), end(shape), 1, std::multiplies<>());
+//    std::cout<<typeid(vecFillNr).name() + node<<std::endl; 
+//    std::cout<<vecFillNr<<std::endl;
+//    if (typeid(vecFillNr) == typeid(int)){
+//        std::cout<<"INT*********"<<std::endl;
+//        std::vector<int> toVec(size);
+//        std::fill(toVec.begin(), toVec.end(), vecFillNr);
+//        Tensor dataTensor{model, node};
+//        dataTensor.set_data(toVec, shape);
+//        return dataTensor;
+//    } else {
+//        std::cout<<"FLOAT*********"<<std::endl; 
+//        std::vector<float> toVec(size);
+//        std::fill(toVec.begin(), toVec.end(), vecFillNr);
+//        Tensor dataTensor{model, node};
+//        dataTensor.set_data(toVec, shape);
+//        return dataTensor;
+//    }
+    std::vector<float> toVec(size);
+    std::fill(toVec.begin(), toVec.end(), vecFillNr);
+    Tensor dataTensor{model, node};
+    dataTensor.set_data(toVec, shape);
 
-    auto xinput  = new Tensor(m,"x_input");
-    std::vector<float> xi(78400);
-    std::fill(xi.begin(), xi.end(), 5);
-    xinput->set_data(xi,{100,28,28,1});
-    m.run({xinput,inputData,eventEnergy}, generatedEvent);
+    return dataTensor;
+}
+
+auto DLInference::TensorBuildUpInt(std::vector<int64_t> shape, auto vecFillNr, auto &model, std::string node) {
+   
+    int size = std::accumulate(begin(shape), end(shape), 1, std::multiplies<>());
+//    std::cout<<typeid(vecFillNr).name() + node<<std::endl; 
+//    std::cout<<vecFillNr<<std::endl;
+//    if (typeid(vecFillNr) == typeid(int)){
+//        std::cout<<"INT*********"<<std::endl;
+//        std::vector<int> toVec(size);
+//        std::fill(toVec.begin(), toVec.end(), vecFillNr);
+//        Tensor dataTensor{model, node};
+//        dataTensor.set_data(toVec, shape);
+//        return dataTensor;
+//    } else {
+//        std::cout<<"FLOAT*********"<<std::endl; 
+//        std::vector<float> toVec(size);
+//        std::fill(toVec.begin(), toVec.end(), vecFillNr);
+//        Tensor dataTensor{model, node};
+//        dataTensor.set_data(toVec, shape);
+//        return dataTensor;
+//    }
+    std::vector<int> toVec(size);
+    std::fill(toVec.begin(), toVec.end(), vecFillNr);
+    Tensor dataTensor{model, node};
+    dataTensor.set_data(toVec, shape);
+
+    return dataTensor;
+}
+
+
+std::vector<float> DLInference::Generation() {
+
+    Model model = ModelBuildUp();
+
+    auto inputData = GenerateInputTensor(inputShape, model, inputNode);
+    auto eventEnergy = GenerateLabelsTensor(labelShape, energyValue, model, labelNode);
+    auto generatedEvent = new Tensor(model, outputNode);
+
+    if (extraInputNode != "") {
+        auto xInput = TensorBuildUpFloat(extraInputShape, extraInputVecNumber, model, extraInputNode);
+        model.run({&xInput,&inputData,&eventEnergy}, generatedEvent);
+    } else {
+        model.run({&inputData,&eventEnergy}, generatedEvent);
+    }
 
     // Get Generated Event Tensor
-    std::vector<float> result = generatedEvent->get_data<float>();
-
+    auto result = generatedEvent->get_data<float>();
+//    auto result = generatedEvent[0].flat<float>();
     return result;
 }
 
-void DLInference::SetModelGraph(const std::string &aModelGraph)
-{
+void DLInference::SetModelGraph(const std::string &aModelGraph) {
     modelGraph = aModelGraph;
 }
-void DLInference::SetModelRestore(const std::string &aModelRestore)
-{
+
+void DLInference::SetModelRestore(const std::string &aModelRestore) {
     modelRestore = aModelRestore;
 }
+
+void DLInference::SetInputNode(const std::string &anInputNode) {
+    inputNode = anInputNode;
+}
+
+void DLInference::SetExtraInputNode(const std::string &anExtraInputNode) {
+    extraInputNode = anExtraInputNode;
+}
+
+void DLInference::SetLabelNode(const std::string &aLabelNode) {
+    labelNode = aLabelNode;
+}
+
+void DLInference::SetOutputNode(const std::string &anOutputNode) {
+    outputNode = anOutputNode;
+}
+
+// {100,2}
+void DLInference::SetInputShape(const std::vector<int64_t> &anInputShape) {
+    inputShape = anInputShape;
+}
+
+void DLInference::SetExtraInputShape(const std::vector<int64_t> &anExtraInputShape) {
+    extraInputShape = anExtraInputShape;
+}
+
+// labelShape = {100,10};
+void DLInference::SetLabelShape(const std::vector<int64_t> &aLabelShape) {
+    labelShape = aLabelShape;
+}
+
+void DLInference::SetEnergyValue(const std::vector<float> &anEnergyValue) {
+    energyValue = anEnergyValue;
+}
+
+void DLInference::SetInputVecNumber(const float  &anInputVecNumber) {
+    inputVecNumber = anInputVecNumber;
+}
+
+void DLInference::SetExtraInputVecNumber(const float &anExtraInputVecNumber) {
+    extraInputVecNumber = anExtraInputVecNumber;
+}
+
+//////////////
+
+std::string DLInference::GetModelGraph() {
+    return modelGraph;
+} 
+
+std::string DLInference::GetModelRestore() {
+    return modelRestore;
+} 
+
+std::string DLInference::GetInputNode() {
+    return inputNode;
+}
+
+std::string DLInference::GetExtraInputNode() {
+    return extraInputNode;
+} 
+
+std::string DLInference::GetLabelNode() {
+    return labelNode;
+}
+
+std::string DLInference::GetOutputNode() {
+    return outputNode;
+}
+
+std::vector<int64_t> DLInference::GetInputShape() {
+    return inputShape;
+}
+
+std::vector<int64_t> DLInference::GetExtraInputShape() {
+    return extraInputShape;
+}
+
+std::vector<int64_t> DLInference::GetLabelShape() {
+    return labelShape;
+}
+
+std::vector<float> DLInference::GetEnergyValue() {
+    return energyValue;
+}
+
+float DLInference::GetInputVecNumber() {
+    return inputVecNumber;
+}
+
+float DLInference::SetExtraInputVecNumber() {
+    return extraInputVecNumber;
+}
+
+
+
+

@@ -217,15 +217,19 @@ void Model::run(const std::vector<Tensor*>& inputs, const std::vector<Tensor*>& 
     TF_SessionRun(this->session, nullptr, io.data(), iv.data(), inputs.size(), oo.data(), ov, outputs.size(), nullptr, 0, nullptr, this->status);
     this->status_check(true);
 
+    std::cout<<"after status check"<<std::endl;
+
     // Save results on outputs and mark as full
-    for (int i=0; i<outputs.size(); i++) {
+    for (std::size_t i=0; i<outputs.size(); i++) {
         outputs[i]->val = ov[i];
         outputs[i]->flag = 1;
-        outputs[i]->deduce_shape(*this);
+        outputs[i]->deduce_shape();
     }
 
     // Mark input as empty
     std::for_each(inputs.begin(), inputs.end(), [] (Tensor* i) {i->clean();});
+
+    delete[] ov;
 }
 
 void Model::run(Tensor &input, Tensor &output) {
@@ -266,6 +270,7 @@ bool Model::status_check(bool throw_exc) const {
 
 void Model::error_check(bool condition, const std::string &error) const {
     if (!condition) {
+        std::cout<<"Model error"<<std::endl;
         throw std::runtime_error(error);
     }
 }

@@ -1,0 +1,8 @@
+../checkpoint/modelAR_25-40_tf13.pb
+../checkpoint/PbWO4_sampled_25-40_24_tf13.ckpt
+model/input_cells
+model/input_labels
+model/generation_output
+20 24 24 24
+20 15
+

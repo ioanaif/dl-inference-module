@@ -12,7 +12,7 @@
 
 ==============================================================================*/
 
-
+#include <memory>
 #include <utility>
 #include "../include/Tensor.h"
 
@@ -25,7 +25,6 @@ Tensor::Tensor(const Model& model, const std::string& operation) {
 
     // Operation did not exists
     error_check(this->op.oper != nullptr, "No operation named \"" + operation + "\" exists" );
-
     // DIMENSIONS
 
     // Get number of dimensions
@@ -42,11 +41,11 @@ Tensor::Tensor(const Model& model, const std::string& operation) {
 
         // Check error on Model Status
         model.status_check(true);
-
         this->shape = std::vector<int64_t>(dims, dims + n_dims);
 
         // Only one dimension can be unknown using this constructor
-        // error_check(std::count(this->shape.begin(), this->shape.end(), -1) <= 1, "At most one dimension can be unknown");
+        error_check(std::count(this->shape.begin(), this->shape.end(), -1) <= 1, "At most one dimension can be unknown");
+        delete[] dims;
     }
 
     this->flag = 0;
@@ -88,7 +87,7 @@ void Tensor::set_data(std::vector<T> new_data) {
     this->error_check(this->flag != -1, "Tensor is not valid");
 
     // Check type
-    this->error_check(deduce_type<T>() == this->type, "Provided type is different from Tensor expected type");
+    this->error_check(deduce_type<T>() == this->type, "Woof Woo Provided type: "  +std::to_string(this->type) + " is different from Tensor expected type: "+ std::to_string(deduce_type<T>()));
 
     // Dimensions must be known
     this->error_check(!this->shape.empty(), "Shape of the input Tensor is not known, please provide a shape");
@@ -102,11 +101,11 @@ void Tensor::set_data(std::vector<T> new_data) {
     this->error_check(new_data.size() % exp_size == 0, "Expected and provided number of elements do not match");
 
     // Deallocator
-    auto d = [](void* ddata, size_t, void* arg) {delete[] static_cast<T*>(ddata);};
+    auto d = [](void* ddata, size_t, void*) {free(static_cast<T*>(ddata));};
 
 
     // Calculate actual shape of unknown dimensions
-    this->actual_shape = new std::vector<int64_t>(shape.begin(), shape.end());
+    this->actual_shape = std::make_unique<decltype(actual_shape)::element_type>(shape.begin(), shape.end());
     std::replace_if (actual_shape->begin(), actual_shape->end(), [](int64_t r) {return r==-1;}, new_data.size()/exp_size);
 
     // Saves data on class
@@ -135,6 +134,8 @@ template<typename T> void Tensor::set_data(std::vector<T> new_data, const std::v
 template<typename T>
 std::vector<T> Tensor::get_data() {
 
+    std::cout<<"la inceput de get_data"<<std::endl;
+
     // Check Tensor is valid
     this->error_check(this->flag != -1, "Tensor is not valid");
 
@@ -152,11 +153,14 @@ std::vector<T> Tensor::get_data() {
     size_t size = TF_TensorByteSize(this->val) / TF_DataTypeSize(TF_TensorType(this->val));
 
     // Convert to correct type
+    std::cout<<"convert to correct type"<<std::endl;
     const auto T_data = static_cast<T*>(raw_data);
     return std::vector<T>(T_data, T_data + size);
 }
 
-
+std::vector<int64_t> Tensor::get_shape() {
+	return shape;
+}
 
 template<typename T>
 TF_DataType Tensor::deduce_type() {
@@ -179,12 +183,14 @@ TF_DataType Tensor::deduce_type() {
     if (std::is_same<T, uint16_t>::value)
         return TF_UINT16;
     if (std::is_same<T, uint32_t>::value)
-        return TF_UINT32;
+        return TF_QINT32;
     if (std::is_same<T, uint64_t>::value)
-        return TF_UINT64;
+        return TF_INT64;
+
+    throw std::runtime_error{"Could not deduce type!"};
 }
 
-void Tensor::deduce_shape(const Model& model) {
+void Tensor::deduce_shape() {
     // Get number of dimensions
     int n_dims = TF_NumDims(this->val);
 
