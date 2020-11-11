@@ -104,7 +104,7 @@ std::vector<float> DLInference::Generation() {
     auto generatedEvent = new Tensor(model, outputNode);
 
     if (extraInputNode != "") {
-        auto xInput = TensorBuildUpFloat(extraInputShape, extraInputVecNumber, model, extraInputNode);
+        auto xInput = GenerateInputTensor(extraInputShape, model, extraInputNode);
         model.run({&xInput,&inputData,&eventEnergy}, generatedEvent);
     } else {
         model.run({&inputData,&eventEnergy}, generatedEvent);

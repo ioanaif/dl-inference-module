@@ -22,9 +22,11 @@ int main(int argc,char **argv) {
     DLInference session; 
     HelperFun helps;
 
+    string path = "../AR_latest_params.txt";
+    string savePath = "../eventAR2.txt";
+    int inputEnergy = 12932;
     vector<string> modelVars; 
     string line;
-    string path = "../AR_latest_params.txt";
     ifstream file;
     file.open(path,ios::in);
 
@@ -46,10 +48,17 @@ int main(int argc,char **argv) {
     session.SetOutputNode(modelVars[4]);
     session.SetInputShape(ShapeTransform(modelVars[5]));
     session.SetLabelShape(ShapeTransform(modelVars[6]));
-    auto energyValue = helps.LabelTransform(12969);
+    auto energyValue = helps.LabelTransform(inputEnergy);
+//    auto energyValue = helps.LabelTransform(argv[0]);
     session.SetEnergyValue(energyValue);
-    session.SetInputVecNumber(0.7);
+    if (modelVars.size() == 9) {
+        session.SetExtraInputNode(modelVars[7]);
+        session.SetExtraInputShape(ShapeTransform(modelVars[8]));
+   }
 
+
+
+//    session.SetInputVecNumber(0.7);
 
 //    session.SetModelGraph("../checkpoint/graphPxRW.pb");
 //    session.SetModelRestore("../checkpoint/params_PbWO4.ckpt");
@@ -97,12 +106,12 @@ int main(int argc,char **argv) {
 	energies.push_back(helps.DepositionsTransform(result[i]));
 //        cout<<energies[i]<<'\n'; 
    }
-    ;
+   cout<<"Result size: "<<energies.size()<<endl;
 
     auto pos = helps.CellPositionsGeneration();
     // Stream Event to File
 
-    std::ofstream outFile("../eventAR2.txt");
+    std::ofstream outFile(savePath);
        for (const auto e : energies) outFile << e << "\n";
 
     return 0;
