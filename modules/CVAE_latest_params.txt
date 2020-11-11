@@ -1,0 +1,9 @@
+../cvae.pb
+../checkpoint/progress-20-model.ckpt
+z_input
+y_input
+decoder/x_decoder_mean_output
+100 2
+100 10
+x_input
+100 28 28 1
