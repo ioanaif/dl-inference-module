@@ -43,16 +43,37 @@ generation = tf.add(a, b, name='output_result')
 
 ## Model Integration Info File Example
 
+In a .txt file save the network details formated as follows:
+
+name of .pb file 
+name of .ckpt file
+name of input node 
+name of label node
+name of output node 
+input shape
+labels shape
+
+An example of such file ```model_latest_params.txt```: 
+ 
 ```Python
-modelType       =  "dcgan"
-modelGraph      = "../dcgan.pb"
-modelRestore    = "../model.b32.ckpt"
-inputNode       = "input_cells"
-labelNode       = "input_labels"
-outputNode      = "output_result"
-inputShape      = {64,8,8,24}
-labelShape      = {64,100}
+modelAR_25-40_tf13.pb
+PbWO4_sampled_25__40_24.ckpt
+model/input_cells
+model/input_labels
+model_generation_output
+20 24 24 24
+20 15
 ```
+In case of multiple input nodes (CVAE) append at the end of .txt file a line containing the extra input node name and another one with its shape. 
+
+## Model Integration Helper Functions Details
+
+Helper functions coresponding to each network particularities are required. These should include the following: 
+
+- label transform function returning a vector of size ```input_label_shape``` transforming the GeV energy value to network label 
+- depositions transform function describing the transformation function for network output -> energy values 
+- cell positions function returning a vector of cell positions 
+
 
 
 
